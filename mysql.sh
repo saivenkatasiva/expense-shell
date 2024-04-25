@@ -27,7 +27,19 @@ dnf install mysql-server -y &>>$LOGFILE
 VALIDATE $? "Installing MYSQL server"
 systemctl enable mysqld &>>$LOGFILE
 VALIDATE $? "ENABLING MYSQL SERVER"
+
 systemctl START mysqld &>>$LOGFILE
 VALIDATE $? "STARTING MYSQL SERVER"
+
+#mysql_secure_installation --set-root-pass ExpenseApp@1 &>>&LOGFILE
+#VALIDATE $? "setting up root password"
+
+#below code is useful for idempotential nature
+mysql -h db.daws78s.online -uroot -pExpenseApp@1 -e 'show databases;' &>>$LOGFILE
+if [ $? -ne 0]
+then
 mysql_secure_installation --set-root-pass ExpenseApp@1 &>>&LOGFILE
-VALIDATE $? "setting up root password"
+VALIDATE $? "Mysql root password setup"
+else
+echo -e "Mysql root password is already setup ...$Y SKIPPING $N"
+fi
